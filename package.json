@@ -1,0 +1,26 @@
+{
+  "name": "visagepro",
+  "version": "1.0.0",
+  "description": "API para reconhecimento e análise facial.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codlinx/VisagePro.git"
+  },
+  "author": "Jean Pierre <jean.pierre@codlinx.com.br>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codlinx/VisagePro/issues"
+  },
+  "homepage": "https://github.com/codlinx/VisagePro#readme",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "face-api.js": "^0.22.2"
+  }
+}
