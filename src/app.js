@@ -6,7 +6,7 @@ const isAllowed = require("./middlewares/isAllowed");
 
 const app = express();
 
-app.use(cors({ origin: "*" }));
+app.use(cors());
 app.use(express.json({ limit: "999mb" }));
 app.use(isAllowed);
 app.use("/api/v1", route);
