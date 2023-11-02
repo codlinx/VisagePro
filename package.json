@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/codlinx/VisagePro#readme",
   "dependencies": {
+    "@inspector-apm/inspector-nodejs": "^1.9.19",
+    "@tensorflow/tfjs-node": "1.7.0",
     "canvas": "^2.11.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
