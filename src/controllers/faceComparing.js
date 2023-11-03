@@ -1,4 +1,5 @@
-const faceapi = require("face-api.js");
+const tf = require("@tensorflow/tfjs-node");
+const faceapi = require("@vladmandic/face-api");
 const canvas = require("canvas");
 const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
@@ -12,21 +13,19 @@ class faceComparing {
         .status(400)
         .json({ error: true, message: "É preciso enviar duas imagens." });
 
-    await faceapi.nets.faceRecognitionNet.loadFromDisk("./src/weights");
-    await faceapi.nets.faceLandmark68Net.loadFromDisk("./src/weights");
-    await faceapi.nets.ssdMobilenetv1.loadFromDisk("./src/weights");
+    await Promise.all([
+      faceapi.nets.faceRecognitionNet.loadFromDisk("./src/weights"),
+      faceapi.nets.faceLandmark68Net.loadFromDisk("./src/weights"),
+      faceapi.nets.ssdMobilenetv1.loadFromDisk("./src/weights"),
+    ]);
 
     const image1 = await canvas.loadImage(file1);
     const image2 = await canvas.loadImage(file2);
 
-    const face1 = await faceapi
-      .detectSingleFace(image1)
-      .withFaceLandmarks()
-      .withFaceDescriptor();
-    const face2 = await faceapi
-      .detectSingleFace(image2)
-      .withFaceLandmarks()
-      .withFaceDescriptor();
+    const [face1, face2] = await Promise.all([
+      faceapi.detectSingleFace(image1).withFaceLandmarks().withFaceDescriptor(),
+      faceapi.detectSingleFace(image2).withFaceLandmarks().withFaceDescriptor(),
+    ]);
 
     if (!face1 || !face2)
       return res
@@ -50,7 +49,7 @@ class faceComparing {
     else
       return res.json({
         error: false,
-        approved: true,
+        approved: false,
         message: "Os rostos não são semelhantes.",
         distance,
       });
