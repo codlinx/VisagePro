@@ -37,6 +37,8 @@ class faceComparing {
       face2.descriptor
     );
 
+    console.log(face2.descriptor.toString());
+
     const threshold = 0.55;
 
     if (distance < threshold)
