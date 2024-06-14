@@ -23,3 +23,5 @@ services:
       - $PORT:$PORT
     stdin_open: true
     tty: true
+volumes:
+    db:
