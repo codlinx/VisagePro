@@ -1,7 +1,21 @@
 version: "3.8"
 
 services:
+  db:
+    hostname: db
+    image: ankane/pgvector
+    restart: always
+    environment:
+      - POSTGRES_DB=$DB_USER
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+     - db:/var/lib/postgresql/data
   app:
+    depends_on:
+      - db
     build: ./
     restart: unless-stopped
     env_file: ./.env
