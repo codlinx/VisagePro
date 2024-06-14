@@ -36,17 +36,36 @@ class faceSearch {
         .json({ error: true, message: "Não foi possivel encontrar rostos." });
 
     try {
-      const items = await db
-        .query("faces")
-        .select("*")
-        .whereRaw(`euclidean_distance(?, embedding) < 0.55`, [
-          faceLand.descriptor.toString(),
-        ]);
+      const items = await db.query(
+        `
+        SELECT * FROM (
+          SELECT id
+               , uuid
+               , embedding <-> :embedding AS distance
+          FROM faces
+          LIMIT 1
+        ) AS result
+         WHERE distance < 0.55
+        `,
+        {
+          type: db.QueryTypes.SELECT,
+          replacements: {
+            embedding: `[${[...faceLand.descriptor]}]`,
+          },
+        }
+      );
+
+      if (items.length === 0)
+        return res.status(400).json({
+          error: true,
+          message: "Nenhuma face encontrada.",
+        });
 
       return res.json({
         error: false,
-        message: "Face cadastrada com sucesso.",
-        items,
+        message: "Face localizada.",
+        uuid: items[0].uuid,
+        distance: items[0].distance,
       });
     } catch (e) {
       console.log(e);
