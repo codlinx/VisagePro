@@ -43,9 +43,10 @@ class faceSearch {
                , uuid
                , embedding <-> :embedding AS distance
           FROM faces
-          LIMIT 1
+          ORDER BY distance ASC
         ) AS result
          WHERE distance < 0.55
+         LIMIT 1
         `,
         {
           type: db.QueryTypes.SELECT,
