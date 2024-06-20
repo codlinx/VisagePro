@@ -1,11 +1,32 @@
 version: "3.8"
 
 services:
+  db:
+    hostname: db
+    image: ankane/pgvector
+    restart: always
+    environment:
+      - POSTGRES_DB=visagepro
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=$DB_PASS
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+     - db:/var/lib/postgresql/data
   app:
+    depends_on:
+      - db
     build: ./
     restart: unless-stopped
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=$DB_PASS
+      - DB_NAME=visagepro
     env_file: ./.env
     ports:
       - $PORT:$PORT
     stdin_open: true
     tty: true
+volumes:
+    db:

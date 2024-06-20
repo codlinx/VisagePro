@@ -33,7 +33,7 @@ class faceSearch {
     if (!faceLand)
       return res
         .status(400)
-        .json({ error: true, message: "Não foi possivel encontrar rostos." });
+        .json({ error: true, message: "Não foi possivel encontrar faces." });
 
     try {
       const items = await db.query(
