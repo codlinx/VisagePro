@@ -10,5 +10,6 @@ route.get("/", (req, res) => res.json({ error: false, message: "OK." }));
 route.post("/faceComparing", faceComparing.handler);
 route.post("/faceUpload", faceUpload.handler);
 route.post("/faceSearch", faceSearch.handler);
+route.post("/faceDelete", faceDelete.handler);
 
 module.exports = route;
