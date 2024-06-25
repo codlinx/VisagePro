@@ -44,6 +44,7 @@ class faceSearch {
                , embedding <-> :embedding AS distance
           FROM faces
           ORDER BY distance ASC
+          WHERE customerId = :customerId
         ) AS result
          WHERE distance < 0.55
          LIMIT 1
@@ -52,6 +53,7 @@ class faceSearch {
           type: db.QueryTypes.SELECT,
           replacements: {
             embedding: `[${[...faceLand.descriptor]}]`,
+            customerId: req.customer.id,
           },
         }
       );
