@@ -3,6 +3,7 @@ const express = require("express");
 const faceComparing = require("./controllers/faceComparing");
 const faceUpload = require("./controllers/faceUpload");
 const faceSearch = require("./controllers/faceSearch");
+const faceDelete = require("./controllers/faceDelete");
 
 const route = express.Router();
 

@@ -3,6 +3,8 @@ const faceapi = require("@vladmandic/face-api");
 const canvas = require("canvas");
 const uuid = require("uuid");
 
+const db = require("../db");
+
 const Face = require("../models/Face");
 
 const { Canvas, Image, ImageData } = canvas;
@@ -115,6 +117,12 @@ class faceUpload {
       }
     } catch (e) {
       console.log(e);
+
+      return res.status(400).json({
+        error: true,
+        message:
+          "Ocorreu um erro. " + e.message ? e.message : "Tente novamente.",
+      });
     }
   }
 }

@@ -74,6 +74,12 @@ class faceSearch {
       });
     } catch (e) {
       console.log(e);
+
+      return res.status(400).json({
+        error: true,
+        message:
+          "Ocorreu um erro. " + e.message ? e.message : "Tente novamente.",
+      });
     }
   }
 }
