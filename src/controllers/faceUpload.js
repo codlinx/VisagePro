@@ -79,8 +79,8 @@ class faceUpload {
                  , ref
                  , embedding <-> :embedding AS distance
             FROM faces
+            WHERE "customerId" = :customerId
             ORDER BY distance ASC
-            WHERE customerId = :customerId
           ) AS result
            WHERE distance < 0.55
            LIMIT 1

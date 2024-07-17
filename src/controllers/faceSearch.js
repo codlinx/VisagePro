@@ -38,17 +38,17 @@ class faceSearch {
     try {
       const items = await db.query(
         `
-        SELECT * FROM (
-          SELECT id
-               , uuid
-               , ref
-               , embedding <-> :embedding AS distance
-          FROM faces
-          ORDER BY distance ASC
-          WHERE customerId = :customerId
-        ) AS result
-         WHERE distance < 0.55
-         LIMIT 1
+        SELECT * FROM ( 
+          SELECT id 
+               , uuid 
+               , ref 
+               , embedding <-> :embedding AS distance 
+          FROM faces 
+          WHERE "customerId" = :customerId
+          ORDER BY distance ASC 
+        ) AS result 
+         WHERE distance < 0.55 
+         LIMIT 1 
         `,
         {
           type: db.QueryTypes.SELECT,
