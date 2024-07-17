@@ -11,6 +11,11 @@ Face.init(
       allowNull: false,
       unique: true,
     },
+    ref: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
     embedding: {
       type: DataTypes.VECTOR,
       allowNull: false,

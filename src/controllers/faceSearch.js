@@ -41,6 +41,7 @@ class faceSearch {
         SELECT * FROM (
           SELECT id
                , uuid
+               , ref
                , embedding <-> :embedding AS distance
           FROM faces
           ORDER BY distance ASC
@@ -69,6 +70,7 @@ class faceSearch {
         message: "Face localizada.",
         uuid: items[0].uuid,
         distance: items[0].distance,
+        ref: items[0].ref,
       });
     } catch (e) {
       console.log(e);

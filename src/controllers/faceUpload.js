@@ -10,7 +10,7 @@ faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 
 class faceUpload {
   static async handler(req, res) {
-    const { file } = req.body;
+    const { file, ref } = req.body;
 
     if (!file)
       return res.status(400).json({
@@ -36,22 +36,83 @@ class faceUpload {
         .status(400)
         .json({ error: true, message: "Não foi possivel encontrar rostos." });
 
-    // const face = "OK";
-
-    console.log(faceLand.descriptor);
-
     try {
-      const face = await Face.create({
-        embedding: [...faceLand.descriptor],
-        uuid: uuid.v4(),
-        customerId: req.customer.id,
+      let face = await Face.findOne({
+        where: {
+          customerId: req.customer.id,
+          ref,
+        },
       });
 
-      return res.json({
-        error: false,
-        message: "Face cadastrada com sucesso.",
-        face,
-      });
+      if (face) {
+        //realiza comparacoes para verificar se a face bate com a ref
+        const distance = faceapi.euclideanDistance(
+          face.embedding,
+          faceLand.descriptor
+        );
+
+        // Se não bater, retorna erro
+        if (distance > 0.55)
+          return res.json({
+            error: false,
+            message: "Ocorreu um erro. Referência incompatível.",
+            distance,
+          });
+
+        face.embedding = [...faceLand.descriptor];
+        await face.save();
+
+        return res.json({
+          error: false,
+          message: "Face atualizada com sucesso.",
+          face,
+        });
+      } else {
+        //Verifica se face ja existe
+        const items = await db.query(
+          `
+          SELECT * FROM (
+            SELECT id
+                 , uuid
+                 , ref
+                 , embedding <-> :embedding AS distance
+            FROM faces
+            ORDER BY distance ASC
+            WHERE customerId = :customerId
+          ) AS result
+           WHERE distance < 0.55
+           LIMIT 1
+          `,
+          {
+            type: db.QueryTypes.SELECT,
+            replacements: {
+              embedding: `[${[...faceLand.descriptor]}]`,
+              customerId: req.customer.id,
+            },
+          }
+        );
+
+        if (items.length > 0)
+          return res.status(400).json({
+            error: true,
+            message:
+              "Ocorreu um erro. Face já cadastrada - Referência: " +
+              items[0].ref,
+          });
+
+        face = await Face.create({
+          uuid: uuid.v4(),
+          ref,
+          embedding: [...faceLand.descriptor],
+          customerId: req.customer.id,
+        });
+
+        return res.json({
+          error: false,
+          message: "Face cadastrada com sucesso.",
+          face,
+        });
+      }
     } catch (e) {
       console.log(e);
     }
