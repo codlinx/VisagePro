@@ -7,6 +7,8 @@ const db = require("../db");
 
 const Face = require("../models/Face");
 
+const checkFaceFraming = require("../utils/checkFaceFraming");
+
 const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 
@@ -38,6 +40,15 @@ class faceUpload {
         .status(400)
         .json({ error: true, message: "Não foi possivel encontrar rostos." });
 
+    const boundingBox = faceLand.detection?.box;
+    const isWellFramed = checkFaceFraming(boundingBox, image);
+
+    if (!isWellFramed)
+      return res.status(400).json({
+        error: true,
+        message: "O rosto não está bem enquadrado na imagem.",
+      });
+
     try {
       let face = await Face.findOne({
         where: {
@@ -54,7 +65,7 @@ class faceUpload {
         );
 
         // Se não bater, retorna erro
-        if (distance > 0.55)
+        if (distance > 0.48)
           return res.json({
             error: false,
             message: "Ocorreu um erro. Referência incompatível.",
@@ -82,7 +93,7 @@ class faceUpload {
             WHERE "customerId" = :customerId
             ORDER BY distance ASC
           ) AS result
-           WHERE distance < 0.55
+           WHERE distance < 0.48
            LIMIT 1
           `,
           {
@@ -99,7 +110,9 @@ class faceUpload {
             error: true,
             message:
               "Ocorreu um erro. Face já cadastrada - Referência: " +
-              items[0].ref,
+              items[0].ref +
+              " - Distância: " +
+              items[0].distance,
           });
 
         face = await Face.create({

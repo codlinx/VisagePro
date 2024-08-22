@@ -47,7 +47,7 @@ class faceSearch {
           WHERE "customerId" = :customerId
           ORDER BY distance ASC 
         ) AS result 
-         WHERE distance < 0.55 
+         WHERE distance < 0.48 
          LIMIT 1 
         `,
         {

@@ -39,7 +39,7 @@ class faceComparing {
 
     console.log(face2.descriptor.toString());
 
-    const threshold = 0.55;
+    const threshold = 0.48;
 
     if (distance < threshold)
       return res.json({
